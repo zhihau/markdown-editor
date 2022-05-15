@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+        <head>
+<title>Markdown editor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/w3.css">
+		<meta charset="UTF-8">
+		<script src="js/showdown.min.js"></script>
+        </head>
+<body>
+
+<div class="w3-container">
+  <h2>Markdown editor</h2>
+
+  <div class="w3-panel w3-blue">
+  <h3>Information</h3>
+  <p id="info"></p>
+</div> 
+
+  <div class="w3-bar">
+  <button class="w3-bar-item w3-button w3-black" onclick="showPreview()">Preview</button>
+  <!--<button class="w3-bar-item w3-button w3-teal">Button</button>
+  <button class="w3-bar-item w3-button w3-red">Button</button>-->
+</div>
+</div>
+
+<div class="w3-row w3-border">
+  <div class="w3-container w3-half w3-red"style="height: 200px;">
+    <textarea id="editor" style="height: 200px;
+   width: 98%;
+   padding:1%;
+   border:none;">
+
+If you like my post, please click the applaud button to support me to keep writing. Thank you!
+[zhihau.github.io](https://zhihau.github.io/)
+</textarea>
+  </div>
+  <div class="w3-container w3-half">
+    <form class="w3-container">
+
+<label>Subject</label>
+<input class="w3-input" onfocus="this.select();" onmouseup="return false;" readonly="readonly" id="subject" type="text">
+
+<label>Tags</label>
+<input class="w3-input"  onfocus="this.select();" onmouseup="return false;" readonly="readonly" id="tag" type="text">
+
+<label>Summary</label>
+<input class="w3-input"  onfocus="this.select();" onmouseup="return false;" readonly="readonly" id="summary"type="text">
+
+<label>Content</label>
+<div id="preview"onclick="selectText('preview')"></div>
+</form>
+  </div>
+</div>
+        <script>
+                document.getElementById("editor").focus();
+                function handleSelection() {
+  const activeElement = document.activeElement
+
+  // make sure this is your textarea
+  if ((activeElement && activeElement.id === 'subject')||(activeElement && activeElement.id === 'tag')||(activeElement && activeElement.id === 'summary')) {
+    /*const range = {
+      start: activeElement.selectionStart,
+      end: activeElement.selectionEnd
+    }*/
+    // do something with your range
+           // Use try & catch for unsupported browser
+           try {
+
+               // The important part (copy selected text)
+               var ok = document.execCommand('copy');
+
+               if (ok) document.getElementById("info").textContent='"'+activeElement.value+'" Copied!';
+               else    alert('Unable to copy!');
+           } catch (err) {
+                   alert('Unsupported Browser!');
+           }
+  }
+}
+
+function selectText(containerid) {
+    if (document.selection) { // IE
+        var range = document.body.createTextRange();
+        range.moveToElementText(document.getElementById(containerid));
+        range.select();
+    } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(document.getElementById(containerid));
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+    }
+}
+document.addEventListener('selectionchange', handleSelection);
+                function showPreview(){
+                        
+var md=document.getElementById("editor").value;//.textContent;
+                        var lines=md.split(/\n/);
+                        var content="";
+                        var temp="";
+                        for(var i=0;i<lines.length;i++){
+                                if(lines[i].startsWith("SUBJECT")){
+                                        temp=lines[i].split(":")[1];
+                                        console.log(temp);
+                                        document.getElementById("subject").value=temp;
+                                }
+                                else if(lines[i].startsWith("TAGS")){
+                                        document.getElementById("tag").value=lines[i].split(":")[1];
+                                }
+                                else if(lines[i].startsWith("SUMMARY")){
+                                        document.getElementById("summary").value=lines[i].split(":")[1];
+                                }
+                                else{
+                                        content+=lines[i]+"\n";
+                                }
+                        }
+                        console.log(md.split(/\n/));
+                        var converter = new showdown.Converter();
+                        var html = converter.makeHtml(content);
+                        console.log(html);
+                        document.getElementById("preview").innerHTML=html;
+                }
+        </script>
+</body>
+</html>       
+
